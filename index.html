@@ -324,10 +324,6 @@
   footer{margin-top:56px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:12px;color:var(--faint)}
   footer a:hover{color:var(--accent)}
 
-  .toolbar{position:fixed;top:18px;right:18px;display:flex;gap:8px;z-index:10}
-  .tbtn{font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px 12px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:7px}
-  .tbtn:hover{border-color:var(--accent);color:var(--text)}
-
   .skeleton{color:transparent;background:linear-gradient(90deg,var(--surface),var(--surface-2),var(--surface));background-size:200% 100%;animation:sh 1.4s infinite;border-radius:6px}
   @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
@@ -357,7 +353,7 @@
     body{padding:0;font-size:11.5px}
 
     /* --- screen-only affordances: none of these mean anything on paper --- */
-    .toolbar,.pulse::after,.banner,.role .caret,.eyebrow,
+    .pulse::after,.banner,.role .caret,.eyebrow,
     .cby-filters,.proj-card .p-more,.proj-shot.ph{display:none!important}
     .cby-list.filtered .cby-row:not(.active){opacity:1}   /* paper shows every year */
 
@@ -410,13 +406,6 @@
 </style>
 </head>
 <body>
-
-<div class="toolbar">
-  <button class="tbtn" onclick="window.print()" title="Save this page as a PDF résumé">
-    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
-    PDF
-  </button>
-</div>
 
 <div class="wrap">
 
@@ -651,7 +640,8 @@ const CONFIG = {
   //   stack  : optional list of technologies used (rendered as tags in the modal).
   //   long   : optional longer description shown in the modal (falls back to `desc`).
   projects : [
-    { name:"Noderight Dental", url:"https://noderightdental.com", img:"noderight-dental",
+    // url intentionally omitted — the public site isn't linked. Was: https://noderightdental.com
+    { name:"Noderight Dental", img:"noderight-dental",
       desc:"Multi-tenant dental practice-management platform — appointments, patient records, billing, inventory, and staff management.",
       long:"A multi-tenant SaaS platform for dental clinics: online appointments, patient records, billing and invoicing, inventory, HR and staff management, and reporting. Built solo end-to-end — schema design, backend, frontend templates, and production deployment. Serves 50+ clinics.",
       stack:["Laravel","MySQL","Livewire","Alpine.js","Tailwind","Redis","Typesense","Stripe","AWS S3","stancl/tenancy","Sanctum","DigitalOcean"],
@@ -672,12 +662,12 @@ const CONFIG = {
       long:"Backend for a state football league: fixtures, match results, and league standings, with PDF and Excel exports for match reports and league tables.",
       stack:["Laravel","MySQL","Bootstrap","jQuery","DomPDF","Excel","Sass"],
       gallery:[] },
-    { name:"Speggit Order",     url:"https://order.speggit.my", img:"speggit-order",
-      desc:"Online ordering web app.",
-      long:"Online ordering web application for customers to browse and place orders.",
-      stack:["Laravel","MySQL"],
+    { name:"Speggit Order",     img:"speggit-order",
+      desc:"Online ordering with a Raspberry Pi print server — a second Laravel service on the Pi accepts order webhooks and routes each item to the printer its menu is mapped to: kitchen, bar, or any other station.",
+      long:"Online ordering web app backed by a second Laravel service running on a Raspberry Pi inside the shop. An order placed on the public site (WAN) fires a webhook to the Pi on the local network, which routes each line to the printer its menu item is mapped to — food to the kitchen, drinks to the bar, and so on. Every station prints only what it has to make, tickets appear the moment an order lands, and the printers never have to be exposed to the internet.",
+      stack:["Laravel","MySQL","Raspberry Pi","Webhooks","Print routing","LAN"],
       gallery:[] },
-    { name:"Tim Katang Point",  url:"https://timkatangempire.com", img:"tim-katang",
+    { name:"Tim Katang Point",  img:"tim-katang",
       desc:"Loyalty / points web application.",
       long:"Loyalty and points web application for tracking member rewards.",
       stack:["Laravel","MySQL"],
