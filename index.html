@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Resume / CV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     DESIGN TOKENS — "Midnight Deploy"
+     ============================================================ */
+  :root{
+    --bg:#0E1116;
+    --surface:#161B22;
+    --surface-2:#1C232C;
+    --text:#E6EDF3;
+    --muted:#8B949E;
+    --faint:#586069;
+    --accent:#FF2D20;          /* Laravel coral */
+    --accent-dim:rgba(255,45,32,.12);
+    --git:#3FB950;             /* GitHub green — brand only (logos, status pulse) */
+    --gitlab:#FC6D26;          /* GitLab orange — brand only */
+    /* Data colours are deliberately NOT the brand colours: #3FB950 vs #FC6D26 sit at
+       ΔE 5.3 under deuteranopia, i.e. indistinguishable for ~8% of men. This pair
+       passes all six checks in both light and dark mode at ΔE 30.5. */
+    --c-gh:#3B82F6;            /* series 1 — GitHub */
+    --c-gl:#EA580C;            /* series 2 — GitLab */
+    --line:#21262D;
+    --radius:14px;
+    --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:'Inter',system-ui,-apple-system,sans-serif;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    padding:clamp(16px,4vw,48px);
+  }
+  .wrap{max-width:1040px;margin:0 auto}
+
+  a{color:inherit;text-decoration:none}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:13px;color:var(--muted);
+    letter-spacing:.02em;margin-bottom:18px;
+  }
+  .eyebrow .prompt{color:var(--git)}
+  .eyebrow .flag{color:var(--accent)}
+
+  /* ============================================================ HERO */
+  .hero{
+    display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;
+    padding-bottom:34px;border-bottom:1px solid var(--line);
+  }
+  .name{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(34px,6.5vw,60px);line-height:1.02;letter-spacing:-.02em;
+  }
+  .role{
+    font-family:var(--mono);font-size:clamp(14px,2.4vw,17px);
+    color:var(--text);margin-top:14px;display:inline-flex;align-items:center;gap:9px;
+  }
+  .role .dot{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+  /* typewriter — min-width is set in JS to the longest role (1ch per char in mono) */
+  .role .type{display:inline-flex;align-items:center;white-space:pre}
+  .role .caret{
+    width:2px;height:1.05em;flex:none;margin-left:3px;border-radius:1px;
+    background:var(--accent);animation:caret 1.05s steps(1) infinite;
+  }
+  .role .type.busy .caret{animation:none;opacity:1}   /* solid while keys are "pressed" */
+  @keyframes caret{0%,50%{opacity:1}50.01%,100%{opacity:0}}
+  .tagline{color:var(--muted);max-width:54ch;margin-top:16px;font-size:15.5px}
+  .tagline strong{color:var(--text);font-weight:600}   /* lead clause carries the pitch */
+  .contacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+  .chip{
+    font-family:var(--mono);font-size:12.5px;color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:6px 13px;
+    display:inline-flex;align-items:center;gap:7px;transition:.18s;
+  }
+  .chip:hover{border-color:var(--accent);color:var(--text);transform:translateY(-1px)}
+  .chip svg{width:13px;height:13px;flex:none}
+
+  .id-card{display:flex;flex-direction:column;align-items:center;gap:14px}
+  .avatar{
+    width:128px;height:128px;border-radius:18px;object-fit:cover;
+    border:1px solid var(--line);box-shadow:0 0 0 4px var(--accent-dim);background:var(--surface);
+  }
+  .status{
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 13px;
+  }
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--git);position:relative}
+  .pulse::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--git);opacity:.5;animation:ring 2s ease-out infinite}
+  @keyframes ring{0%{transform:scale(.6);opacity:.6}100%{transform:scale(1.6);opacity:0}}
+
+  /* ============================================================ STAT BAND */
+  .stat-band{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;margin:34px 0;
+  }
+  .stat{background:var(--bg);padding:22px 20px}
+  .stat .num{font-family:var(--display);font-weight:700;font-size:32px;letter-spacing:-.02em}
+  .stat .lbl{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+  .stat .num .accent{color:var(--accent)}
+
+  /* ============================================================ SECTIONS */
+  .section{margin-top:48px}
+  .head{
+    display:flex;align-items:baseline;gap:14px;margin-bottom:20px;
+  }
+  .head h2{font-family:var(--display);font-weight:500;font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  .head .rule{flex:1;height:1px;background:var(--line)}
+  .head .meta{font-family:var(--mono);font-size:12px;color:var(--faint)}
+
+  /* activity chart */
+  .activity{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .activity-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+  .activity-top .big{font-family:var(--display);font-weight:700;font-size:26px}
+  .activity-top .sub{font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .bars{display:flex;align-items:flex-end;gap:5px;height:96px}
+  .bar-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+  .bar{background:var(--git);border-radius:3px 3px 1px 1px;min-height:3px;transition:height .6s cubic-bezier(.2,.7,.3,1);opacity:.9}
+  .bar.empty{background:var(--line);opacity:.6}
+  .bar-axis{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:8px}
+
+  /* commits-by-year */
+  .cby-filters{display:flex;flex-wrap:wrap;gap:8px}
+  .cby-chip{font-family:var(--mono);font-size:12.5px;color:var(--muted);background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:6px 13px;cursor:pointer;transition:.18s}
+  .cby-chip:hover{border-color:var(--accent);color:var(--text);transform:translateY(-1px)}
+  .cby-chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--text)}
+  .cby-list{display:flex;flex-direction:column;gap:9px;margin-top:16px}
+  .cby-row{display:grid;grid-template-columns:48px 1fr 76px;align-items:center;gap:12px;cursor:pointer;padding:4px 6px;border-radius:8px;transition:background .15s,opacity .15s}
+  .cby-row:hover{background:var(--surface-2)}
+  .cby-row.active{background:var(--accent-dim)}
+  /* when a single year is picked the others recede, so the filter visibly filters */
+  .cby-list.filtered .cby-row:not(.active){opacity:.3}
+  .cby-year{font-family:var(--mono);font-size:13px;color:var(--muted)}
+  .cby-row.active .cby-year{color:var(--text)}
+  .cby-track{display:flex;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+  .cby-fill-gh{height:100%;background:var(--c-gh);transition:width .6s cubic-bezier(.2,.7,.3,1)}
+  .cby-fill-gl{height:100%;background:var(--c-gl);transition:width .6s cubic-bezier(.2,.7,.3,1)}
+  .cby-val{font-family:var(--mono);font-size:13px;color:var(--text);text-align:right;font-variant-numeric:tabular-nums}
+
+  /* language bar */
+  .langbar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface);border:1px solid var(--line)}
+  .langbar span{display:block;height:100%}
+  .langlegend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .langlegend .item{display:inline-flex;align-items:center;gap:7px}
+  .langlegend .swatch{width:9px;height:9px;border-radius:2px;flex:none}
+  .repo-counts{display:flex;gap:12px;padding:6px 2px 2px}
+  .repo-counts .rc{flex:1;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 14px}
+  .repo-counts .rc-n{display:block;font-size:26px;font-weight:700;color:var(--text);font-family:var(--mono);line-height:1}
+  .repo-counts .rc-l{display:block;margin-top:6px;font-size:12px;color:var(--muted);font-family:var(--mono);letter-spacing:.04em}
+
+  /* source panels */
+  .panels{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;flex-direction:column}
+  .panel-head{display:flex;align-items:center;gap:11px;margin-bottom:6px}
+  .panel-head .logo{width:22px;height:22px;flex:none}
+  .panel-head h3{font-family:var(--display);font-weight:700;font-size:17px}
+  .panel-head .src-stats{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  .panel-divider{height:1px;background:var(--line);margin:14px 0}
+  .repo{display:block;padding:11px 0;border-bottom:1px solid var(--line)}
+  .repo:last-child{border-bottom:none}
+  .repo .r-top{display:flex;align-items:center;gap:8px}
+  .repo .r-name{font-family:var(--mono);font-weight:500;font-size:14px;color:var(--text)}
+  .repo:hover .r-name{color:var(--accent)}
+  .repo .r-stars{margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--muted);display:inline-flex;align-items:center;gap:4px}
+  .repo .r-desc{font-size:13px;color:var(--muted);margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .repo .r-lang{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:5px;display:inline-flex;align-items:center;gap:6px}
+  .ldot{width:9px;height:9px;border-radius:50%;flex:none}
+  .gl-empty{display:flex;flex-direction:column;align-items:flex-start;gap:10px;color:var(--muted);font-size:13.5px}
+  .gl-empty code{font-family:var(--mono);background:var(--surface-2);padding:2px 7px;border-radius:5px;color:var(--gitlab);font-size:12px}
+
+  /* skills */
+  .tags{display:flex;flex-wrap:wrap;gap:9px}
+  .tag{font-family:var(--mono);font-size:13px;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 13px;transition:.18s}
+  .tag:hover{border-color:var(--accent)}
+  /* dashed = breadth, not daily depth — visually distinct from the core stack above */
+  .tag.ghost{color:var(--muted);background:transparent;border-style:dashed}
+  .tag.ghost:hover{color:var(--text);border-color:var(--accent)}
+  .subhead{
+    font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--faint);margin:24px 0 12px;display:flex;align-items:center;gap:9px;
+  }
+  .subhead .rule{flex:1;height:1px;background:var(--line)}
+  .subhead .meta{text-transform:none;letter-spacing:.02em;font-size:11px}
+  /* the closing statement, styled as the last pill in the row */
+  .tag.pitch{
+    font-family:var(--body);color:var(--text);background:var(--accent-dim);
+    border-color:var(--accent);border-style:solid;
+  }
+  .tag.pitch::before{content:"→";color:var(--accent);margin-right:8px;font-family:var(--mono)}
+
+  /* timeline */
+  .timeline{position:relative;padding-left:24px}
+  .timeline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1px;background:var(--line)}
+  .tl-item{position:relative;padding-bottom:26px}
+  .tl-item:last-child{padding-bottom:0}
+  .tl-item::before{content:"";position:absolute;left:-23px;top:5px;width:11px;height:11px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+  .tl-when{font-family:var(--mono);font-size:12px;color:var(--accent)}
+  .tl-role{font-family:var(--display);font-weight:700;font-size:17px;margin-top:3px}
+  .tl-org{color:var(--muted);font-size:14px;margin-top:1px}
+  .tl-desc{color:var(--muted);font-size:14px;margin-top:8px;max-width:65ch}
+
+  .edu-row{display:flex;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .edu-row:last-child{border-bottom:none}
+  .edu-row .e-deg{font-weight:600;font-size:15px}
+  .edu-row .e-sch{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .edu-row .e-when{font-family:var(--mono);font-size:12px;color:var(--faint);white-space:nowrap}
+
+  /* ============================================================ SERVICES */
+  .svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+  .svc{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px;display:flex;flex-direction:column;gap:10px;transition:.18s;
+  }
+  .svc:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .svc-ico{
+    width:34px;height:34px;border-radius:9px;background:var(--accent-dim);
+    display:inline-flex;align-items:center;justify-content:center;color:var(--accent);
+  }
+  .svc-ico svg{width:17px;height:17px}
+  .svc h3{font-family:var(--display);font-weight:700;font-size:16px}
+  .svc p{color:var(--muted);font-size:13.5px;line-height:1.55}
+
+  /* ============================================================ CTA */
+  .cta{
+    background:var(--surface);border:1px solid var(--line);border-left:2px solid var(--accent);
+    border-radius:var(--radius);padding:26px 28px;
+    display:flex;flex-wrap:wrap;gap:22px;align-items:center;justify-content:space-between;
+  }
+  .cta-copy h3{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.01em}
+  .cta-copy p{color:var(--muted);font-size:14.5px;margin-top:7px;max-width:52ch}
+  .cta-actions{display:flex;flex-wrap:wrap;gap:10px}
+  .cta-btn{
+    font-family:var(--mono);font-size:13px;color:var(--text);
+    background:var(--surface-2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 17px;display:inline-flex;align-items:center;gap:9px;transition:.18s;white-space:nowrap;
+  }
+  .cta-btn svg{width:15px;height:15px;flex:none}
+  .cta-btn:hover{border-color:var(--accent);transform:translateY(-1px)}
+  .cta-btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  .cta-btn.primary:hover{filter:brightness(1.08)}
+
+  .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  .proj-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;display:flex;flex-direction:column;transition:.18s;
+  }
+  .proj-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .proj-shot{
+    aspect-ratio:16/10;background:var(--surface-2);border-bottom:1px solid var(--line);
+    display:block;width:100%;object-fit:cover;object-position:top center;
+  }
+  .proj-shot.ph{
+    display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;
+    color:var(--faint);font-family:var(--mono);font-size:12px;text-align:center;padding:12px;
+  }
+  .proj-shot.ph svg{width:26px;height:26px;opacity:.5}
+  .proj-body{padding:15px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .proj-body .p-name{font-weight:600;font-size:15px}
+  .proj-body .p-desc{color:var(--muted);font-size:13px;line-height:1.5}
+  .proj-body .p-link{
+    font-family:var(--mono);font-size:12px;color:var(--muted);
+    display:inline-flex;align-items:center;gap:6px;transition:.18s;margin-top:auto;padding-top:6px;
+  }
+  .proj-body .p-link:hover{color:var(--accent)}
+  .proj-body .p-link svg{width:12px;height:12px;flex:none}
+  .proj-card{cursor:pointer}
+  .proj-card .p-more{font-family:var(--mono);font-size:11px;color:var(--faint);margin-top:auto;padding-top:8px;display:inline-flex;align-items:center;gap:6px}
+  /* without an explicit size a viewBox-only SVG stretches to fill the flex line */
+  .proj-card .p-more svg{width:12px;height:12px;flex:none}
+  .proj-card:hover .p-more{color:var(--accent)}
+
+  /* ============================================================ PROJECT MODAL */
+  .modal{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;
+    padding:clamp(16px,5vh,60px) 16px;overflow-y:auto;background:rgba(6,9,13,.78);backdrop-filter:blur(3px)}
+  .modal.open{display:flex}
+  .modal-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    max-width:820px;width:100%;overflow:hidden;position:relative;animation:mpop .22s ease}
+  @keyframes mpop{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:none}}
+  .modal-close{position:absolute;top:12px;right:12px;z-index:2;width:34px;height:34px;border-radius:9px;
+    background:rgba(14,17,22,.7);border:1px solid var(--line);color:var(--text);cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;transition:.18s}
+  .modal-close:hover{border-color:var(--accent);color:var(--accent)}
+  .modal-close svg{width:16px;height:16px}
+  .m-gallery{background:var(--surface-2);border-bottom:1px solid var(--line)}
+  .m-gallery img{display:block;width:100%;max-height:440px;object-fit:contain;object-position:center;background:#0b0e12}
+  .m-gallery .ph{height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;
+    gap:10px;color:var(--faint);font-family:var(--mono);font-size:13px}
+  .m-gallery .ph svg{width:34px;height:34px;opacity:.5}
+  .m-thumbs{display:flex;gap:8px;padding:10px 12px;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+  .m-thumbs img{width:70px;height:46px;object-fit:cover;border-radius:6px;border:1px solid var(--line);
+    cursor:pointer;opacity:.6;transition:.15s}
+  .m-thumbs img:hover,.m-thumbs img.active{opacity:1;border-color:var(--accent)}
+  .m-body{padding:22px 24px 26px}
+  .m-body h3{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em}
+  .m-body .m-long{color:var(--muted);font-size:14.5px;line-height:1.6;margin-top:12px;max-width:66ch}
+  .m-body .m-link{font-family:var(--mono);font-size:13px;color:var(--git);display:inline-flex;align-items:center;
+    gap:7px;margin-top:16px;transition:.18s}
+  .m-body .m-link:hover{color:var(--accent)}
+  .m-body .m-link svg{width:14px;height:14px}
+  .m-stack-label{font-family:var(--mono);font-size:11px;color:var(--faint);text-transform:uppercase;
+    letter-spacing:.1em;margin:22px 0 10px}
+  .m-stack{display:flex;flex-wrap:wrap;gap:7px}
+  .m-stack .tag{font-family:var(--mono);font-size:12px;color:var(--text);background:var(--surface-2);
+    border:1px solid var(--line);border-radius:999px;padding:5px 12px}
+  body.modal-open{overflow:hidden}
+  @media print{.modal{display:none!important}}
+
+  /* footer */
+  footer{margin-top:56px;padding-top:24px;border-top:1px solid var(--line);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-family:var(--mono);font-size:12px;color:var(--faint)}
+  footer a:hover{color:var(--accent)}
+
+  .toolbar{position:fixed;top:18px;right:18px;display:flex;gap:8px;z-index:10}
+  .tbtn{font-family:var(--mono);font-size:12px;background:var(--surface);border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:8px 12px;cursor:pointer;transition:.18s;display:inline-flex;align-items:center;gap:7px}
+  .tbtn:hover{border-color:var(--accent);color:var(--text)}
+
+  .skeleton{color:transparent;background:linear-gradient(90deg,var(--surface),var(--surface-2),var(--surface));background-size:200% 100%;animation:sh 1.4s infinite;border-radius:6px}
+  @keyframes sh{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+  .banner{font-family:var(--mono);font-size:13px;background:var(--accent-dim);border:1px solid var(--accent);color:var(--text);border-radius:10px;padding:12px 16px;margin-bottom:24px;display:none}
+  .banner.show{display:block}
+
+  /* fade in */
+  .fade{opacity:0;transform:translateY(8px);animation:fade .5s ease forwards}
+  @keyframes fade{to{opacity:1;transform:none}}
+
+  @media (max-width:760px){
+    .hero{grid-template-columns:1fr}
+    .id-card{flex-direction:row;align-items:center;order:-1}
+    .avatar{width:84px;height:84px}
+    .stat-band{grid-template-columns:repeat(2,1fr)}
+    .cta{flex-direction:column;align-items:flex-start}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+    html{scroll-behavior:auto}
+  }
+
+  /* ============================================================ PRINT
+     Same content, clean white résumé for "Print → Save as PDF" */
+  @media print{
+    :root{--bg:#fff;--surface:#fff;--surface-2:#fff;--text:#111;--muted:#444;--faint:#777;--line:#ddd;--accent-dim:transparent}
+    body{padding:0;font-size:11.5px}
+
+    /* --- screen-only affordances: none of these mean anything on paper --- */
+    .toolbar,.pulse::after,.banner,.role .caret,.eyebrow,
+    .cby-filters,.proj-card .p-more,.proj-shot.ph{display:none!important}
+    .cby-list.filtered .cby-row:not(.active){opacity:1}   /* paper shows every year */
+
+    /* --- A4 content width is ~688px, so the 760px mobile breakpoint fires while
+           printing and wrecks the layout. Re-assert the desktop grids here. --- */
+    .hero{grid-template-columns:1fr auto;border-color:#ddd}
+    .id-card{flex-direction:column;align-items:center;order:0}
+    .avatar{width:96px;height:96px}
+    .stat-band{grid-template-columns:repeat(4,1fr)}
+    .svc-grid{grid-template-columns:repeat(3,1fr);gap:12px}
+    .proj-grid{grid-template-columns:repeat(2,1fr);gap:12px}
+    .cta{flex-direction:row;align-items:center}
+
+    /* --- page breaks: keep whole blocks together, never orphan a heading --- */
+    .section{margin-top:22px;page-break-inside:auto}
+    .head,.subhead{page-break-after:avoid;break-after:avoid}
+    .svc,.proj-card,.tl-item,.activity,.cta,.edu-row,.stat-band,.langbar{
+      page-break-inside:avoid;break-inside:avoid;
+    }
+
+    /* --- ink-friendly surfaces --- */
+    .stat-band,.activity,.tag,.svc,.cta,.proj-card{border-color:#ddd;background:#fff}
+    .cta{border-left-color:#111}
+    .cta-btn{border-color:#ddd;background:#fff;color:#111}
+    .cta-btn.primary{background:#fff;color:#111}
+    .svc-ico{background:#f2f2f2;color:#111}
+    .tag.ghost{color:#444}
+    .tag.pitch{border-color:#111;color:#111}
+    .tag.pitch::before{color:#111}
+    .bar{background:#333!important}
+    a{color:#111}
+
+    /* --- tighten everything: a grid row is atomic, so slimmer rows waste far
+           less space at each page break --- */
+    .proj-shot{max-height:96px}
+    .proj-body{padding:11px 13px 12px;gap:4px}
+    .proj-body .p-desc{font-size:11px;line-height:1.45}
+    .svc{padding:14px;gap:7px}
+    .svc p{font-size:11px;line-height:1.45}
+    .svc-ico{width:26px;height:26px}
+    .svc-ico svg{width:14px;height:14px}
+    .stat .num{font-size:24px}
+    .stat{padding:14px 16px}
+    .activity{padding:16px}
+    .timeline .tl-item{padding-bottom:16px}
+    .cta{padding:18px 20px}
+    footer{margin-top:28px;padding-top:14px}
+    @page{margin:14mm}
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button class="tbtn" onclick="window.print()" title="Save this page as a PDF résumé">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+    PDF
+  </button>
+</div>
+
+<div class="wrap">
+
+  <div id="banner" class="banner"></div>
+
+  <p class="eyebrow"><span class="prompt">➜</span> ~/cv <span class="flag">git log</span> --author=<span id="prompt-name">"…"</span> --oneline</p>
+
+  <!-- ===================== HERO ===================== -->
+  <header class="hero fade">
+    <div>
+      <h1 class="name" id="name">Loading…</h1>
+      <div class="role">
+        <span class="dot"></span>
+        <span class="type" id="role-type"><span id="role">Laravel Developer</span><span class="caret" id="role-caret" aria-hidden="true"></span></span>
+      </div>
+      <p class="tagline" id="tagline"></p>
+      <div class="contacts" id="contacts"></div>
+    </div>
+    <div class="id-card">
+      <img class="avatar skeleton" id="avatar" alt="" />
+      <div class="status"><span class="pulse"></span><span id="status">checking activity…</span></div>
+    </div>
+  </header>
+
+  <!-- ===================== SERVICES ===================== -->
+  <section class="section fade" id="svc-section" style="display:none;animation-delay:.05s">
+    <div class="head"><h2 id="svc-label">How I can help</h2><span class="rule"></span></div>
+    <div class="svc-grid" id="services"></div>
+  </section>
+
+  <!-- ===================== SELECTED WORK ===================== -->
+  <section class="section" id="proj-section">
+    <div class="head"><h2>Selected work</h2><span class="rule"></span><span class="meta" id="proj-meta"></span></div>
+    <div class="proj-grid" id="projects"></div>
+  </section>
+
+  <!-- ===================== SKILLS ===================== -->
+  <section class="section">
+    <div class="head"><h2>Skills</h2><span class="rule"></span><span class="meta" id="skills-meta"></span></div>
+    <div class="tags" id="skills"></div>
+
+    <!-- filled from CONFIG.aiStack — hidden entirely when that block is empty -->
+    <div id="ai-stack-wrap" style="display:none">
+      <div class="subhead"><span id="ai-stack-label"></span><span class="rule"></span></div>
+      <div class="tags" id="ai-stack"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PROOF OF WORK =====================
+       Live git data. Supporting evidence, deliberately below the work itself. -->
+  <section class="section">
+    <div class="head"><h2>Proof of work</h2><span class="rule"></span><span class="meta" id="src-line"></span></div>
+
+    <div class="stat-band">
+      <div class="stat"><div class="num" id="s-years">—</div><div class="lbl">Years shipping</div></div>
+      <div class="stat"><div class="num" id="s-projects">—</div><div class="lbl">Repos &amp; projects</div></div>
+      <div class="stat"><div class="num" id="s-commits-all">—</div><div class="lbl">Commits all-time</div></div>
+      <div class="stat"><div class="num"><span class="accent" id="s-commits">—</span></div><div class="lbl" id="lbl-commits">Commits / 90d</div></div>
+    </div>
+
+  <div id="cby-section" style="display:none">
+    <div class="subhead"><span>Commits by year</span><span class="rule"></span><span class="meta" id="cby-meta">incl. private</span></div>
+    <div class="activity">
+      <div class="cby-filters" id="cby-filters"></div>
+      <div class="langlegend" id="cby-legend" style="margin-top:12px"></div>
+      <div class="activity-top" style="margin-top:18px;margin-bottom:2px">
+        <div><div class="big" id="cby-count">—</div><div class="sub" id="cby-sub">commits</div></div>
+      </div>
+      <div class="cby-list" id="cby-list"></div>
+    </div>
+  </div>
+
+    <div class="subhead"><span>Recent activity</span><span class="rule"></span><span class="meta" id="act-meta">public push events</span></div>
+    <div class="activity">
+      <div class="activity-top">
+        <div><div class="big" id="act-total">—</div><div class="sub" id="act-sub">commits in the last 12 weeks</div></div>
+        <div class="sub" id="act-last">last push: —</div>
+      </div>
+      <div class="bars" id="bars"></div>
+      <div class="bar-axis"><span>12 weeks ago</span><span>this week</span></div>
+    </div>
+
+    <div id="lang-section">
+      <div class="subhead"><span>Languages</span><span class="rule"></span><span class="meta" id="lang-meta">by repository</span></div>
+      <div class="langbar" id="langbar"></div>
+      <div class="langlegend" id="langlegend"></div>
+    </div>
+  </section>
+
+  <!-- ===================== EXPERIENCE ===================== -->
+  <section class="section" id="exp-section">
+    <div class="head"><h2>Experience</h2><span class="rule"></span></div>
+    <div class="timeline" id="experience"></div>
+  </section>
+
+  <!-- ===================== EDUCATION ===================== -->
+  <section class="section" id="edu-section">
+    <div class="head"><h2>Education</h2><span class="rule"></span></div>
+    <div id="education"></div>
+  </section>
+
+  <!-- ===================== CTA ===================== -->
+  <section class="section" id="cta-section" style="display:none">
+    <div class="cta">
+      <div class="cta-copy">
+        <h3 id="cta-title"></h3>
+        <p id="cta-desc"></p>
+      </div>
+      <div class="cta-actions" id="cta-actions"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span id="foot-name">© <span id="year"></span></span>
+    <span>data: live from GitHub &amp; GitLab · updated <span id="updated"></span></span>
+  </footer>
+
+</div>
+
+<!-- ===================== PROJECT MODAL ===================== -->
+<div class="modal" id="proj-modal" role="dialog" aria-modal="true" aria-labelledby="m-title">
+  <div class="modal-card">
+    <button class="modal-close" id="m-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="m-gallery" id="m-gallery"></div>
+    <div class="m-thumbs" id="m-thumbs" style="display:none"></div>
+    <div class="m-body">
+      <h3 id="m-title"></h3>
+      <p class="m-long" id="m-long"></p>
+      <a class="m-link" id="m-link" target="_blank" rel="noopener" style="display:none"></a>
+      <div id="m-stack-wrap" style="display:none">
+        <div class="m-stack-label">Built with</div>
+        <div class="m-stack" id="m-stack"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Stats data. data.js sets window.__STATS__ and loads even from file:// (opened directly).
+     It's written by fetch-stats.js alongside data.json. Missing file just 404s harmlessly. -->
+<script src="data.js"></script>
+
+<script>
+/* ════════════════════════════════════════════════════════════════
+   CONFIG  —  ✏️  EDIT THIS BLOCK. Everything else is automatic.
+   ════════════════════════════════════════════════════════════════ */
+const CONFIG = {
+  githubUsername : "Azkar17",        // ← your GitHub username
+  gitlabUsername : "Azkar17",               // ← your GitLab username  (leave "" to hide GitLab)
+
+  // Optional overrides. Leave "" to auto-use your GitHub profile values.
+  name     : "Azkar Abidi",                     // e.g. "Ahmad bin Ismail"
+  role     : "Laravel Developer",    // primary title — used for <title> and the printed PDF
+  // Typed one after another in the hero. Add/remove/reorder freely; one entry = no animation.
+  roles    : ["Laravel Developer","Software Developer","Software Engineer","Fullstack Developer"],
+  // Sits right under the role. **double asterisks** render bold; everything else is escaped.
+  tagline  : "**I help solve the problems that hurt and drain your time** — by building the system, "
+           + "automating the manual work, or fixing what's already broken.",
+  location : "Kluang, Malaysia",     // "" = your GitHub location
+  email    : "azkarabidi17@gmail.com",
+  website  : "",                     // e.g. "https://yoursite.com"
+
+  // WhatsApp click-to-chat. `whatsapp` MUST be international format: country code, no "+",
+  // no leading 0 — Malaysia 011-3661 1484 becomes 60 11 3661 1484. Opens the app on phones
+  // and WhatsApp Web on desktop. Leave "" to hide the chip.
+  whatsapp      : "601136611484",
+  whatsappLabel : "@azkar17",        // what visitors read; "" = show the raw number
+  // Pre-filled WhatsApp message. Ends with a colon + space so the visitor just keeps
+  // typing. "" = open an empty chat instead.
+  whatsappText  : "Hi Azkar, I found your portfolio. Here's what I'm trying to solve: ",
+
+  yearsShipping : 8,                 // 2018 → today. Shown in the Proof-of-work band.
+
+  // The three ways the tagline cashes out. icon: build | automate | fix | ship.
+  // items:[] hides the whole section.
+  services : {
+    label : "How I can help",
+    items : [
+      { icon:"build", title:"Build the system",
+        desc:"The internal tool, customer portal, or line-of-business app you keep postponing. "
+           + "Schema, backend, frontend, deployment — built around how your team actually works." },
+      { icon:"automate", title:"Automate the manual work",
+        desc:"The spreadsheet someone re-keys every week, the report built by hand, the data copied "
+           + "between two systems. Scripted once, then it just runs." },
+      { icon:"fix", title:"Fix what's already broken",
+        desc:"Inherited a codebase nobody wants to touch? Slow queries, fragile deploys, features "
+           + "that break each other. I read into it and get it stable." },
+    ],
+  },
+
+  // Closing call-to-action. Buttons are generated from the whatsapp/email fields above.
+  // Set title:"" to hide the section.
+  cta : {
+    title : "Got something that's costing you time?",
+    desc  : "Tell me what's slow, manual, or broken. If I'm not the right fit I'll say so — "
+          + "and point you at what is.",
+  },
+
+  // Manual sections — fill these in (they can't come from git):
+  skills : ["Laravel","PHP","MySQL","JavaScript","jQuery","Bootstrap","HTML","CSS","Git","DigitalOcean"],
+
+  // Breadth beyond the daily stack, shipped with an AI pair. Rendered as dashed tags so it
+  // reads as reach, not as years of experience. ✏️ Trim `tags` to what you'd really take on —
+  // set tags:[] (or delete aiStack) to hide this whole block.
+  aiStack : {
+    label : "AI-assisted · stacks I take work in",
+    tags  : ["Claude Code","Hermes Agent",
+             "Python","Node.js","TypeScript","Flutter","Livewire","Alpine.js","Tailwind","Go",
+             "REST APIs","PostgreSQL","Redis","Linux","Bash"],
+    // Closing statement — rendered as the last, highlighted pill. Set "" to drop it.
+    // Empty on purpose: the pitch now lives in the hero tagline, no need to repeat it here.
+    pitch : "",
+  },
+
+  experience : [
+    { when:"2018 — Present", role:"Programmer", org:"Noderight Sdn Bhd",
+      desc:"Solo backend developer owning the full lifecycle: designing the database and backend from the ground up, implementing frontend templates, running manual testing, and deploying to production on DigitalOcean. Most recently the Noderight Dental practice-management platform." },
+    { when:"2017 — 2018", role:"Intern, Software Developer", org:"ATS Ventures Sdn Bhd",
+      desc:"Worked with senior developers to build a museum web application (Museum Asset Management), developed in PHP." },
+  ],
+
+  education : [
+    { degree:"BSc (Hons) Information Technology (Software Engineering)", school:"Universiti Utara Malaysia", when:"2014 — 2018" },
+    { degree:"STAM & SPM", school:"Maahad Amir Indra Petra", when:"2012 — 2013" },
+  ],
+
+  // Notable shipped projects. Clicking a card opens a modal (gallery + stack + details).
+  //   url    : optional — adds a link chip.
+  //   img    : cover thumbnail — images/<img>.png (missing = "coming soon" placeholder).
+  //   gallery: optional list of extra screenshot slugs — images/<slug>.png — shown in the modal.
+  //   stack  : optional list of technologies used (rendered as tags in the modal).
+  //   long   : optional longer description shown in the modal (falls back to `desc`).
+  projects : [
+    { name:"Noderight Dental", url:"https://noderightdental.com", img:"noderight-dental",
+      desc:"Multi-tenant dental practice-management platform — appointments, patient records, billing, inventory, and staff management.",
+      long:"A multi-tenant SaaS platform for dental clinics: online appointments, patient records, billing and invoicing, inventory, HR and staff management, and reporting. Built solo end-to-end — schema design, backend, frontend templates, and production deployment. Serves 50+ clinics.",
+      stack:["Laravel","MySQL","Livewire","Alpine.js","Tailwind","Redis","Typesense","Stripe","AWS S3","stancl/tenancy","Sanctum","DigitalOcean"],
+      gallery:["noderight-dental","noderight-dental-dashboard"] },
+    { name:"MAPA Circular Management System", img:"mapa",
+      desc:"Digital circular-management platform for the Malayan Agricultural Producers Association — publish, distribute, and track official circulars across members.",
+      long:"Digital platform for the Malayan Agricultural Producers Association to publish, distribute, and track official circulars across member organisations — replacing a manual paper-based workflow.",
+      stack:["Laravel","MySQL","Blade","Tailwind","Vite","MailerSend"],
+      gallery:["mapa"] },
+    { name:"Jom Mancing", img:"jom-mancing",
+      desc:"Fishing-tournament management system — run events, register participants, log fish catches, and track live scoreboards.",
+      long:"A fishing-tournament management system: organisers create events, register participants (with IC/phone), log fish catches, and display a live scoreboard with configurable ranking limits.",
+      stack:["Laravel","MySQL","Alpine.js","Tailwind","Sanctum","Vite"],
+      gallery:["jom-mancing","jom-mancing-admin"] },
+    // url intentionally omitted — the public site isn't shown. Was: https://liga.faselangor.com
+    { name:"Liga FA Selangor — Backend", img:"liga-fa",
+      desc:"Backend for a football league management system — fixtures, results, and standings.",
+      long:"Backend for a state football league: fixtures, match results, and league standings, with PDF and Excel exports for match reports and league tables.",
+      stack:["Laravel","MySQL","Bootstrap","jQuery","DomPDF","Excel","Sass"],
+      gallery:[] },
+    { name:"Speggit Order",     url:"https://order.speggit.my", img:"speggit-order",
+      desc:"Online ordering web app.",
+      long:"Online ordering web application for customers to browse and place orders.",
+      stack:["Laravel","MySQL"],
+      gallery:[] },
+    { name:"Tim Katang Point",  url:"https://timkatangempire.com", img:"tim-katang",
+      desc:"Loyalty / points web application.",
+      long:"Loyalty and points web application for tracking member rewards.",
+      stack:["Laravel","MySQL"],
+      gallery:[] },
+    { name:"Solar Referral", img:"solar-referral",
+      desc:"Referral program platform — track referrals, calculate earnings, and manage payouts.",
+      long:"Referral program platform: members refer new customers, the system tracks referrals, calculates earnings, and manages payouts, with email-verified accounts via Laravel Fortify.",
+      stack:["Laravel","MySQL","Fortify","Tailwind","Vite"],
+      gallery:[] },
+    { name:"Trello-Strutt", img:"trello-strutt",
+      desc:"Trello integration that syncs boards via webhooks to track workshop efficiency — logs how long each card stays in progress and surfaces live timing and progress metrics on a dashboard.",
+      long:"A companion tool that connects to an existing Trello workspace via webhooks. It captures card movement in real time, logs how long each card stays in progress, and surfaces workshop-efficiency and progress metrics on a live dashboard — turning Trello activity into throughput and timing analytics.",
+      stack:["Laravel","MySQL","Vue 3","shadcn/ui","Tailwind","Alpine.js","Sanctum","Trello Webhooks","Vite"],
+      gallery:[] },
+  ],
+};
+/* ════════════════════════════════════════════════════════════════ */
+
+
+/* ---------- small helpers ---------- */
+const $ = id => document.getElementById(id);
+const fmt = n => n >= 1000 ? (n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k' : String(n);
+const esc = s => (s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const banner = msg => { const b=$('banner'); b.textContent=msg; b.classList.add('show'); };
+
+const LANG_COLORS = {
+  PHP:'#777BB4', JavaScript:'#F1E05A', TypeScript:'#3178C6', HTML:'#E34C26',
+  CSS:'#563D7C', Vue:'#41B883', Blade:'#FF2D20', Python:'#3572A5', Java:'#B07219',
+  Go:'#00ADD8', Ruby:'#701516', Shell:'#89E051', Dart:'#00B4AB', C:'#555555',
+  'C++':'#F34B7D','C#':'#178600', Kotlin:'#A97BFF', Swift:'#F05138', Rust:'#DEA584',
+  SCSS:'#C6538C', Dockerfile:'#384D54', Vue3:'#41B883'
+};
+const langColor = l => LANG_COLORS[l] || '#8B949E';
+
+/* ---------- GitHub ---------- */
+async function ghFetch(path){
+  const r = await fetch('https://api.github.com/'+path, {headers:{Accept:'application/vnd.github+json'}});
+  if(r.status === 403) throw new Error('RATE');
+  if(r.status === 404) throw new Error('NOTFOUND');
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+async function loadGitHub(){
+  const u = CONFIG.githubUsername;
+  if(!u) return {repos:[], stars:0, followers:0};
+
+  const [profile, repos, events] = await Promise.all([
+    ghFetch(`users/${u}`),
+    ghFetch(`users/${u}/repos?per_page=100&sort=updated`),
+    ghFetch(`users/${u}/events/public?per_page=100`).catch(()=>[]),
+  ]);
+
+  /* identity (config overrides profile) */
+  const name = CONFIG.name || profile.name || u;
+  $('name').textContent = name;
+  $('prompt-name').textContent = '"'+name+'"';
+  $('foot-name').innerHTML = '© <span id="year"></span> '+esc(name);
+  $('year').textContent = new Date().getFullYear();
+  document.title = name + ' — ' + CONFIG.role;
+  if(!CONFIG.tagline) renderTagline(profile.bio);   // #role and #tagline are rendered up front
+
+  const av = $('avatar');
+  av.src = profile.avatar_url; av.alt = name; av.classList.remove('skeleton');
+
+  renderContacts(profile);   // re-render so location/website can fall back to the profile
+
+  /* repo stats (exclude forks from the tally) */
+  const owned = repos.filter(r=>!r.fork);
+  const stars = repos.reduce((s,r)=>s+r.stargazers_count,0);
+  SRC.gh = {total:owned.length};   // data.json later adds the public/private split
+  paintSources();
+
+  /* activity from events */
+  const act = weeklyCommits(events);
+  renderActivity(act);
+  $('s-commits').textContent = act.last90;
+  $('status').textContent = act.last90>0 ? act.last90+' commits · 90d' : 'no recent public pushes';
+
+  return {repos, stars, followers:profile.followers||0, owned:owned.length};
+}
+
+/* ---------- GitLab ---------- */
+async function loadGitLab(){
+  const u = CONFIG.gitlabUsername;
+  if(!u) return {repos:[], stars:0};
+  try{
+    const users = await (await fetch(`https://gitlab.com/api/v4/users?username=${encodeURIComponent(u)}`)).json();
+    if(!users.length){ throw new Error('NOTFOUND'); }
+    const id = users[0].id;
+    const projects = await (await fetch(`https://gitlab.com/api/v4/users/${id}/projects?per_page=100&order_by=last_activity_at`)).json();
+
+    const stars = projects.reduce((s,p)=>s+(p.star_count||0),0);
+    SRC.gl = {total:projects.length};
+    paintSources();
+    return {repos:projects, stars};
+  }catch(e){
+    return {repos:[], stars:0};
+  }
+}
+
+/* ---------- rendering ---------- */
+/* One quiet line beside the "Proof of work" heading. Counts only — never project names,
+   since almost all of them are private client work. */
+const SRC = { gh:null, gl:null };
+function paintSources(){
+  const part = (label, s) => {
+    if(!s) return null;
+    return label + ' ' + s.total + (s.priv != null ? ` · ${s.priv} private` : '');
+  };
+  $('src-line').textContent = [part('GitHub', SRC.gh), part('GitLab', SRC.gl)]
+    .filter(Boolean).join('  ·  ');
+}
+
+function weeklyCommits(events){
+  const WEEKS = 12;
+  const now = new Date();
+  const buckets = new Array(WEEKS).fill(0);
+  let last90 = 0, lastPush = null;
+  (events||[]).forEach(ev=>{
+    if(ev.type!=='PushEvent') return;
+    const d = new Date(ev.created_at);
+    const size = (ev.payload && (ev.payload.distinct_size ?? ev.payload.size)) || 0;
+    const diffDays = (now - d)/86400000;
+    if(diffDays<=90) last90 += size;
+    if(!lastPush || d>lastPush) lastPush = d;
+    const w = Math.floor(diffDays/7);
+    if(w>=0 && w<WEEKS) buckets[WEEKS-1-w] += size;   // oldest left → newest right
+  });
+  return {buckets, last90, total:buckets.reduce((a,b)=>a+b,0), lastPush};
+}
+function renderActivity(a){
+  const max = Math.max(...a.buckets, 1);
+  $('bars').innerHTML = a.buckets.map(v=>{
+    const h = v===0 ? 3 : Math.max(6, Math.round(v/max*96));
+    return `<div class="bar-col"><div class="bar ${v===0?'empty':''}" style="height:0" data-h="${h}" title="${v} commits"></div></div>`;
+  }).join('');
+  requestAnimationFrame(()=>document.querySelectorAll('.bar').forEach(b=>b.style.height=b.dataset.h+'px'));
+  $('act-total').textContent = a.total;
+  $('act-last').textContent = 'last push: ' + (a.lastPush ? timeAgo(a.lastPush) : '—');
+}
+function timeAgo(d){
+  const s = (Date.now()-d)/1000;
+  if(s<3600)   return Math.floor(s/60)+'m ago';
+  if(s<86400)  return Math.floor(s/3600)+'h ago';
+  if(s<2592000)return Math.floor(s/86400)+'d ago';
+  return d.toLocaleDateString();
+}
+
+/* ---------- commits by year (from data.json) — filterable counter ---------- */
+function animateCount(el, to){
+  if(!el) return;
+  const dur = 600, start = performance.now();
+  (function tick(t){
+    const p = Math.min(1, (t-start)/dur), e = 1-Math.pow(1-p, 3);
+    el.textContent = Math.round(to*e).toLocaleString('en-US');
+    if(p < 1) requestAnimationFrame(tick); else el.textContent = to.toLocaleString('en-US');
+  })(performance.now());
+}
+/* commits by year — horizontal rows, filterable by year.
+   Picking a year now dims the other rows as well as changing the headline number,
+   so the filter visibly acts on the chart and not just on the figure above it. */
+const numf = n => (n||0).toLocaleString('en-US');
+
+function renderCommitsByYear(list){   // list: [{year, github, gitlab, total}]
+  if(!Array.isArray(list) || !list.length) return;
+  const years = list.slice().sort((a,b)=>b.year-a.year);            // newest first
+  const maxTotal  = Math.max(...years.map(y=>y.total), 1);
+  const allTotal  = years.reduce((s,y)=>s+y.total, 0);
+  const allGh     = years.reduce((s,y)=>s+y.github, 0);
+  const allGl     = years.reduce((s,y)=>s+y.gitlab, 0);
+  const hasGitlab = years.some(y=>y.gitlab>0);
+
+  $('s-commits-all').textContent = fmt(allTotal);   // headline number in the stat band
+
+  $('cby-section').style.display = '';
+  $('cby-meta').textContent = hasGitlab ? 'GitHub + GitLab · incl. private' : 'GitHub · incl. private';
+  $('cby-legend').innerHTML =
+    `<span class="item"><span class="swatch" style="background:var(--c-gh)"></span>GitHub</span>` +
+    (hasGitlab ? `<span class="item"><span class="swatch" style="background:var(--c-gl)"></span>GitLab</span>` : '');
+
+  $('cby-filters').innerHTML =
+    `<button class="cby-chip active" data-scope="all">All</button>` +
+    years.map(y=>`<button class="cby-chip" data-scope="${y.year}">${y.year}</button>`).join('');
+
+  $('cby-list').innerHTML = years.map(y=>{
+    const ghW = (y.github/maxTotal*100)||0, glW = (y.gitlab/maxTotal*100)||0;
+    return `<div class="cby-row" data-scope="${y.year}" title="${y.year}: ${numf(y.github)} GitHub · ${numf(y.gitlab)} GitLab">
+      <span class="cby-year">${y.year}</span>
+      <span class="cby-track"><span class="cby-fill-gh" style="width:${ghW}%"></span><span class="cby-fill-gl" style="width:${glW}%"></span></span>
+      <span class="cby-val">${numf(y.total)}</span>
+    </div>`;
+  }).join('');
+
+  function select(scope){
+    const all = String(scope) === 'all';
+    let total, gh, gl, label;
+    if(all){ total=allTotal; gh=allGh; gl=allGl; label='all time'; }
+    else { const y = years.find(x=>String(x.year)===String(scope)) || {github:0,gitlab:0,total:0};
+           total=y.total; gh=y.github; gl=y.gitlab; label=String(scope); }
+    animateCount($('cby-count'), total);
+    $('cby-sub').textContent = 'commits · ' + label + (hasGitlab ? ` · ${numf(gh)} GitHub + ${numf(gl)} GitLab` : '');
+    $('cby-list').classList.toggle('filtered', !all);
+    document.querySelectorAll('.cby-chip').forEach(c=>c.classList.toggle('active', String(c.dataset.scope)===String(scope)));
+    document.querySelectorAll('.cby-row').forEach(r=>r.classList.toggle('active', String(r.dataset.scope)===String(scope)));
+  }
+  $('cby-filters').onclick = e=>{ const b=e.target.closest('.cby-chip'); if(b) select(b.dataset.scope); };
+  $('cby-list').onclick    = e=>{ const r=e.target.closest('.cby-row');  if(r) select(r.dataset.scope); };
+  select('all');
+}
+
+function paintLanguages(entries){   // entries: [name, weight][] (weight = repo count or bytes)
+  if(!entries.length){ $('lang-section').style.display='none'; return; }
+  $('lang-section').style.display='';
+  const total = entries.reduce((s,[,c])=>s+c,0) || 1;
+  $('langbar').innerHTML = entries.map(([l,c])=>`<span style="width:${c/total*100}%;background:${langColor(l)}" title="${l}"></span>`).join('');
+  $('langlegend').innerHTML = entries.slice(0,8).map(([l,c])=>
+    `<span class="item"><span class="swatch" style="background:${langColor(l)}"></span>${esc(l)} <span style="color:var(--faint)">${Math.round(c/total*100)}%</span></span>`).join('');
+}
+function renderLanguages(allRepos){  // live/public fallback: tally by primary language (public repos only)
+  const tally = {};
+  allRepos.filter(r=>!r.fork && r.language).forEach(r=>{ tally[r.language]=(tally[r.language]||0)+1; });
+  paintLanguages(Object.entries(tally).sort((a,b)=>b[1]-a[1]));
+}
+
+/* contact chips — drawn from CONFIG immediately, then redrawn once the GitHub profile
+   lands so location/website can fall back to it. Never blocked by a rate-limited API. */
+function renderContacts(profile){
+  profile = profile || {};
+  const u    = CONFIG.githubUsername;
+  const loc  = CONFIG.location || profile.location;
+  const site = CONFIG.website || (profile.blog ? (profile.blog.startsWith('http')?profile.blog:'https://'+profile.blog) : '');
+  const chips = [];
+  if(loc)                   chips.push(chip(svgPin, esc(loc)));
+  if(CONFIG.email)          chips.push(chipLink('mailto:'+CONFIG.email, svgMail, esc(CONFIG.email)));
+  if(CONFIG.whatsapp)       chips.push(chipLink(waHref(), svgWa, esc(CONFIG.whatsappLabel || CONFIG.whatsapp)));
+  if(u)                     chips.push(chipLink('https://github.com/'+u, svgGit, '@'+u));
+  if(CONFIG.gitlabUsername) chips.push(chipLink('https://gitlab.com/'+CONFIG.gitlabUsername, svgGl, '@'+CONFIG.gitlabUsername));
+  if(site)                  chips.push(chipLink(site, svgLink, site.replace(/^https?:\/\//,'')));
+  $('contacts').innerHTML = chips.join('');
+}
+
+/* hero tagline — escaped first, then **bold** only, so CONFIG can't inject HTML.
+   Rendered before the API calls so the pitch still shows if GitHub is rate-limited. */
+function renderTagline(text){
+  $('tagline').innerHTML = esc(text || '').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+}
+
+/* services — the three ways the hero tagline cashes out */
+const SVC_ICONS = {
+  build:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l9 5v10l-9 5-9-5V7l9-5z"/><path d="M3.3 7L12 12l8.7-5M12 22V12"/></svg>',
+  automate: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 11-3.5-7.1"/><path d="M21 3v5h-5"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  fix:      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 005.2 5.2L21 13l-8 8-2-2 8-8 1.3-1.3a4 4 0 00-5.2-5.2z"/><path d="M6.5 6.5l4 4M3 10l4-4"/></svg>',
+  ship:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 6 6 1-4.5 4.3 1 6.2L12 16.8 6.5 19.5l1-6.2L3 9l6-1 3-6z"/></svg>',
+};
+function renderServices(){
+  const s = CONFIG.services;
+  if(!s || !Array.isArray(s.items) || !s.items.length) return;
+  $('svc-label').textContent = s.label || 'How I can help';
+  $('services').innerHTML = s.items.map(i=>`
+    <div class="svc">
+      <span class="svc-ico">${SVC_ICONS[i.icon] || SVC_ICONS.build}</span>
+      <h3>${esc(i.title)}</h3>
+      <p>${esc(i.desc)}</p>
+    </div>`).join('');
+  $('svc-section').style.display = '';
+}
+
+/* closing call-to-action — buttons reuse the same contact details as the hero chips */
+function renderCTA(){
+  const c = CONFIG.cta;
+  if(!c || !c.title) return;
+  $('cta-title').textContent = c.title;
+  $('cta-desc').textContent  = c.desc || '';
+  const btns = [];
+  if(CONFIG.whatsapp)
+    btns.push(`<a class="cta-btn primary" href="${waHref()}" target="_blank" rel="noopener">${svgWa}WhatsApp me</a>`);
+  if(CONFIG.email)
+    btns.push(`<a class="cta-btn" href="mailto:${esc(CONFIG.email)}">${svgMail}Email</a>`);
+  $('cta-actions').innerHTML = btns.join('');
+  $('cta-section').style.display = '';
+}
+
+/* AI-assisted breadth under Skills — the whole block is optional */
+function renderAIStack(){
+  const a = CONFIG.aiStack;
+  if(!a || !Array.isArray(a.tags) || !a.tags.length) return;
+
+  $('ai-stack-label').textContent = a.label || 'With AI assistance';
+  $('ai-stack').innerHTML =
+    a.tags.map(t=>`<span class="tag ghost">${esc(t)}</span>`).join('') +
+    (a.pitch ? `<span class="tag pitch">${esc(a.pitch)}</span>` : '');
+  $('ai-stack-wrap').style.display = '';
+  $('skills-meta').textContent = CONFIG.skills.length + ' core · ' + a.tags.length + ' more with AI';
+}
+
+/* manual sections */
+function renderManual(){
+  renderTagline(CONFIG.tagline);
+  renderContacts();
+  renderServices();
+  renderCTA();
+  if(CONFIG.yearsShipping) $('s-years').textContent = CONFIG.yearsShipping;
+  $('skills').innerHTML = CONFIG.skills.map(s=>`<span class="tag">${esc(s)}</span>`).join('');
+  renderAIStack();
+  if(CONFIG.experience.length){
+    $('experience').innerHTML = CONFIG.experience.map(e=>`
+      <div class="tl-item">
+        <div class="tl-when">${esc(e.when)}</div>
+        <div class="tl-role">${esc(e.role)}</div>
+        <div class="tl-org">${esc(e.org)}</div>
+        ${e.desc?`<div class="tl-desc">${esc(e.desc)}</div>`:''}
+      </div>`).join('');
+  } else $('exp-section').style.display='none';
+  if(CONFIG.education.length){
+    $('education').innerHTML = CONFIG.education.map(e=>`
+      <div class="edu-row"><div><div class="e-deg">${esc(e.degree)}</div><div class="e-sch">${esc(e.school)}</div></div>
+      <div class="e-when">${esc(e.when)}</div></div>`).join('');
+  } else $('edu-section').style.display='none';
+  if(CONFIG.projects && CONFIG.projects.length){
+    const ph = `<div class="proj-shot ph">${svgImg}<span>screenshot coming soon</span></div>`;
+    $('projects').innerHTML = CONFIG.projects.map((p,i)=>{
+      const host = p.url ? p.url.replace(/^https?:\/\//,'').replace(/\/$/,'') : '';
+      const link = p.url
+        ? `<a class="p-link" href="${esc(p.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${svgLink}${esc(host)}</a>`
+        : '';
+      const desc = p.desc ? `<div class="p-desc">${esc(p.desc)}</div>` : '';
+      // Screenshot if a slug is set; a missing file falls back to the placeholder (handler attached below).
+      const shot = p.img
+        ? `<img class="proj-shot" src="images/${esc(p.img)}.png" alt="${esc(p.name)} screenshot" loading="lazy">`
+        : ph;
+      const more = `<span class="p-more">${svgArrow}View details</span>`;
+      return `<div class="proj-card" data-i="${i}" tabindex="0" role="button" aria-label="View ${esc(p.name)} details">${shot}`
+        + `<div class="proj-body"><div class="p-name">${esc(p.name)}</div>${desc}${link}${more}</div></div>`;
+    }).join('');
+    // Swap any screenshot that fails to load for the "coming soon" placeholder — avoids inline-quote issues.
+    $('projects').querySelectorAll('img.proj-shot').forEach(img=>{
+      img.addEventListener('error', ()=>{ img.outerHTML = ph; });
+    });
+    // Card click / keyboard opens the detail modal.
+    $('projects').querySelectorAll('.proj-card').forEach(card=>{
+      const open = ()=> openProjectModal(CONFIG.projects[+card.dataset.i]);
+      card.addEventListener('click', open);
+      card.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); } });
+    });
+    $('proj-meta').textContent = CONFIG.projects.length + ' shipped';
+  } else $('proj-section').style.display='none';
+  $('updated').textContent = new Date().toLocaleDateString();
+}
+
+/* ---------- project detail modal ---------- */
+function openProjectModal(p){
+  if(!p) return;
+  const modal = $('proj-modal');
+
+  // Gallery: use `gallery` slugs if given, else fall back to the cover `img`.
+  const shots = (Array.isArray(p.gallery) && p.gallery.length) ? p.gallery
+              : (p.img ? [p.img] : []);
+  const gEl = $('m-gallery'), tEl = $('m-thumbs');
+
+  function showShot(slug){
+    const img = new Image();
+    img.onload  = ()=>{ gEl.innerHTML = `<img src="images/${slug}.png" alt="${esc(p.name)} screenshot">`; };
+    img.onerror = ()=>{ gEl.innerHTML = `<div class="ph">${svgImg}<span>screenshot coming soon</span></div>`; };
+    img.src = `images/${slug}.png`;
+  }
+
+  if(shots.length){
+    showShot(shots[0]);
+    if(shots.length > 1){
+      tEl.style.display = '';
+      tEl.innerHTML = shots.map((s,i)=>`<img src="images/${esc(s)}.png" data-s="${esc(s)}" class="${i===0?'active':''}" alt="thumbnail">`).join('');
+      tEl.querySelectorAll('img').forEach(th=>{
+        th.addEventListener('click', ()=>{
+          tEl.querySelectorAll('img').forEach(x=>x.classList.remove('active'));
+          th.classList.add('active');
+          showShot(th.dataset.s);
+        });
+        th.addEventListener('error', ()=> th.remove());
+      });
+    } else tEl.style.display = 'none';
+  } else {
+    gEl.innerHTML = `<div class="ph">${svgImg}<span>screenshot coming soon</span></div>`;
+    tEl.style.display = 'none';
+  }
+
+  $('m-title').textContent = p.name;
+  $('m-long').textContent  = p.long || p.desc || '';
+
+  const linkEl = $('m-link');
+  if(p.url){
+    const host = p.url.replace(/^https?:\/\//,'').replace(/\/$/,'');
+    linkEl.href = p.url;
+    linkEl.innerHTML = svgLink + esc(host);
+    linkEl.style.display = '';
+  } else linkEl.style.display = 'none';
+
+  const stackWrap = $('m-stack-wrap');
+  if(Array.isArray(p.stack) && p.stack.length){
+    $('m-stack').innerHTML = p.stack.map(t=>`<span class="tag">${esc(t)}</span>`).join('');
+    stackWrap.style.display = '';
+  } else stackWrap.style.display = 'none';
+
+  modal.classList.add('open');
+  document.body.classList.add('modal-open');
+  $('m-close').focus();
+}
+
+function closeProjectModal(){
+  $('proj-modal').classList.remove('open');
+  document.body.classList.remove('modal-open');
+}
+
+/* wire modal dismissers once */
+(function initModal(){
+  const modal = $('proj-modal');
+  if(!modal) return;
+  $('m-close').addEventListener('click', closeProjectModal);
+  modal.addEventListener('click', e=>{ if(e.target === modal) closeProjectModal(); }); // backdrop
+  addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.classList.contains('open')) closeProjectModal(); });
+})();
+
+/* ---------- role typewriter ----------
+   Vanilla, ~40 lines. No GSAP/Three.js: the roles stay as real text, so they still
+   copy-paste, get read by screen readers, and print correctly in the PDF. */
+function typeRoles(){
+  const el    = $('role');
+  const wrap  = $('role-type');
+  const caret = $('role-caret');
+  const roles = (CONFIG.roles && CONFIG.roles.length) ? CONFIG.roles : [CONFIG.role];
+
+  /* reserve the widest role so the accent dot and the caret never shift (mono ⇒ 1ch/char) */
+  wrap.style.minWidth = (Math.max(...roles.map(r=>r.length)) + 1) + 'ch';
+
+  if(roles.length < 2 || matchMedia('(prefers-reduced-motion:reduce)').matches){
+    el.textContent = roles[0];
+    caret.style.display = 'none';
+    return;
+  }
+
+  const TYPE = 62, ERASE = 30, HOLD = 1800, GAP = 420;
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let frozen = false;
+
+  /* freeze on the primary role while printing, and idle while the tab is hidden */
+  addEventListener('beforeprint', ()=>{ frozen = true;  el.textContent = CONFIG.role; });
+  addEventListener('afterprint',  ()=>{ frozen = false; });
+  const gate = async ()=>{ while(frozen || document.hidden) await sleep(250); };
+
+  (async ()=>{
+    el.textContent = '';
+    for(let i = 0; ; i++){
+      const word = roles[i % roles.length];
+      wrap.classList.add('busy');
+      for(let n = 1; n <= word.length; n++){
+        await gate();
+        el.textContent = word.slice(0, n);
+        await sleep(TYPE + Math.random()*40);      // uneven keystrokes read as human
+      }
+      wrap.classList.remove('busy');               // caret blinks while the role sits
+      await gate(); await sleep(HOLD);
+      wrap.classList.add('busy');
+      for(let n = word.length - 1; n >= 0; n--){
+        await gate();
+        el.textContent = word.slice(0, n);
+        await sleep(ERASE);
+      }
+      wrap.classList.remove('busy');
+      await gate(); await sleep(GAP);
+    }
+  })();
+}
+
+/* svg snippets for chips */
+const svgPin='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+const svgMail='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 6 10-6"/></svg>';
+const svgGit='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.5v-1.7c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 016 0C17.3 4.6 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.6.8.5 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/></svg>';
+const svgGl='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l3.8-11.7H8.2L12 21z"/></svg>';
+const svgLink='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007 0l3-3a5 5 0 00-7-7l-1 1"/><path d="M14 11a5 5 0 00-7 0l-3 3a5 5 0 007 7l1-1"/></svg>';
+const svgImg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>';
+const svgArrow='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const svgWa='<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.66-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.14-.18.19-.3.29-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.06 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2.01-1.42.25-.69.25-1.29.17-1.41-.07-.13-.27-.2-.57-.35M12.05 21.79h-.01a9.87 9.87 0 01-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 01-1.51-5.26c0-5.45 4.44-9.89 9.89-9.89 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 012.89 6.99c0 5.45-4.43 9.89-9.88 9.89M20.52 3.45A11.82 11.82 0 0012.05 0C5.46 0 .1 5.36.1 11.95c0 2.1.55 4.14 1.6 5.94L0 24l6.3-1.65a11.88 11.88 0 005.69 1.45h.01c6.58 0 11.94-5.36 11.94-11.95 0-3.19-1.24-6.19-3.5-8.45"/></svg>';
+const chip = (svg,txt) => `<span class="chip">${svg}${txt}</span>`;
+/* Only http(s) links open in a new tab. mailto:/tel: must navigate in place — a
+   target="_blank" on them opens a blank tab and often looks like nothing happened. */
+const chipLink = (href,svg,txt) =>
+  `<a class="chip" href="${href}"${/^https?:/i.test(href) ? ' target="_blank" rel="noopener"' : ''}>${svg}${txt}</a>`;
+/* wa.me = WhatsApp's own click-to-chat: app on mobile, WhatsApp Web on desktop. Digits only. */
+const waHref = () => 'https://wa.me/' + String(CONFIG.whatsapp).replace(/\D/g,'') +
+  (CONFIG.whatsappText ? '?text=' + encodeURIComponent(CONFIG.whatsappText) : '');
+
+/* ---------- boot ---------- */
+(async function init(){
+  renderManual();
+  typeRoles();          // runs regardless of whether the APIs answer
+  let gh={repos:[],stars:0,followers:0,owned:0}, gl={repos:[],stars:0};
+  try{
+    [gh, gl] = await Promise.all([loadGitHub(), loadGitLab()]);
+  }catch(e){
+    if(e.message==='RATE') banner('GitHub API rate limit reached (60 requests/hour without a token). Please try again in a little while.');
+    else if(e.message==='NOTFOUND') banner('GitHub user "'+CONFIG.githubUsername+'" not found — check the username in the CONFIG block.');
+    else banner('Could not load GitHub data: '+e.message);
+    $('name').textContent = CONFIG.name || CONFIG.githubUsername || 'Resume';
+  }
+  /* combined stats (public, live) */
+  $('s-projects').textContent = (gh.owned||0) + (gl.repos.length||0);
+
+  /* optional upgrade: data.json written by the GitHub Action — includes PRIVATE repos.
+     If it isn't there yet, the page just keeps the live public stats above. */
+  let langsFromData = false;
+  try{
+    let d = window.__STATS__ || null;                 // embedded by data.js — works even from file://
+    if(!d){                                            // fallback: fetch data.json (needs an http:// server)
+      const dr = await fetch('./data.json', {cache:'no-store'});
+      if(dr.ok) d = await dr.json();
+    }
+    if(d && typeof d.totalRepos === 'number'){
+        const glProjects = d.gitlab ? (d.gitlab.projects||0) : (gl.repos.length||0);  // incl. private when token set
+        $('s-projects').textContent = d.totalRepos + glProjects;
+        if(typeof d.totalContributionsYear==='number'){
+          $('s-commits').textContent = fmt(d.totalContributionsYear);
+          $('lbl-commits').textContent = 'Contributions / yr';
+        }
+        const priv = d.privateRepos||0;
+        $('status').textContent = (d.totalContributionsYear ?? 0)+' contributions · 1yr' + (priv?` · ${priv} private`:'');
+
+        /* recent activity incl. PRIVATE contributions (from contribution calendar) */
+        if(d.activity && Array.isArray(d.activity.weeks)){
+          renderActivity({
+            buckets:  d.activity.weeks,
+            total:    d.activity.total ?? d.activity.weeks.reduce((a,b)=>a+b,0),
+            last90:   d.activity.last90 || 0,
+            lastPush: d.activity.lastDate ? new Date(d.activity.lastDate+'T00:00:00Z') : null,
+          });
+          $('act-sub').textContent  = 'contributions in the last 12 weeks';
+          $('act-meta').textContent = (d.sources && d.sources.includes('gitlab')) ? 'GitHub + GitLab · incl. private' : 'incl. private';
+          $('act-last').textContent = 'last activity: ' + (d.activity.lastDate ? timeAgo(new Date(d.activity.lastDate+'T00:00:00Z')) : '—');
+        }
+
+        /* languages incl. PRIVATE repos (weighted by bytes) */
+        if(Array.isArray(d.languages) && d.languages.length){
+          paintLanguages(d.languages.map(x=>[x.name, x.bytes]));
+          $('lang-meta').textContent = 'by bytes · incl. private';
+          langsFromData = true;
+        }
+
+        /* repo / project counts — public vs private only (no names) */
+        if(typeof d.publicRepos==='number' && typeof d.privateRepos==='number')
+          SRC.gh = {total:d.totalRepos, priv:d.privateRepos};
+        if(d.gitlab && typeof d.gitlab.publicProjects==='number')
+          SRC.gl = {total:d.gitlab.projects, priv:d.gitlab.privateProjects||0};
+        paintSources();
+
+        /* commits by year — filterable counter (GitHub incl. private + GitLab) */
+        if(Array.isArray(d.contributionsByYear) && d.contributionsByYear.length){
+          renderCommitsByYear(d.contributionsByYear.map(y=>({
+            year:   y.year,
+            github: y.commits||0,
+            gitlab: y.gitlab||0,
+            total:  (y.commits||0)+(y.gitlab||0),
+          })));
+        }
+      }
+  }catch(e){ /* no embedded data / data.json — keep live public stats */ }
+
+  if(!langsFromData) renderLanguages(gh.repos||[]);
+})();
+</script>
+</body>
+</html>

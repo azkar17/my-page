@@ -1,0 +1,8 @@
+# Local secrets — never commit
+.env
+
+# Node
+node_modules/
+
+# Local dev screenshots (~2.5 MB of throwaway captures)
+snap_*.png
