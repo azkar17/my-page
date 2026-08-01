@@ -1,20 +1,20 @@
 window.__STATS__ = {
-  "generatedAt": "2026-07-30T03:21:59.432Z",
-  "totalContributionsYear": 156,
-  "commitContributionsYear": 145,
+  "generatedAt": "2026-08-01T23:11:20.696Z",
+  "totalContributionsYear": 164,
+  "commitContributionsYear": 152,
   "privateContributions": 0,
-  "publicRepos": 7,
+  "publicRepos": 8,
   "privateRepos": 19,
-  "totalRepos": 26,
+  "totalRepos": 27,
   "totalStars": 0,
   "languages": [
     {
       "name": "JavaScript",
-      "bytes": 9876850
+      "bytes": 9892475
     },
     {
       "name": "CSS",
-      "bytes": 5419304
+      "bytes": 5421759
     },
     {
       "name": "Blade",
@@ -22,7 +22,7 @@ window.__STATS__ = {
     },
     {
       "name": "PHP",
-      "bytes": 2593287
+      "bytes": 2596440
     },
     {
       "name": "SCSS",
@@ -33,12 +33,12 @@ window.__STATS__ = {
       "bytes": 208130
     },
     {
-      "name": "Go",
-      "bytes": 90530
+      "name": "HTML",
+      "bytes": 157915
     },
     {
-      "name": "HTML",
-      "bytes": 89209
+      "name": "Go",
+      "bytes": 90530
     },
     {
       "name": "TypeScript",
@@ -50,7 +50,7 @@ window.__STATS__ = {
     },
     {
       "name": "Python",
-      "bytes": 11878
+      "bytes": 17328
     },
     {
       "name": "Shell",
@@ -63,7 +63,6 @@ window.__STATS__ = {
   ],
   "activity": {
     "weeks": [
-      2,
       0,
       0,
       10,
@@ -74,11 +73,12 @@ window.__STATS__ = {
       6,
       14,
       51,
-      26
+      73,
+      2
     ],
-    "total": 237,
-    "last90": 238,
-    "lastDate": "2026-07-30"
+    "total": 284,
+    "last90": 286,
+    "lastDate": "2026-08-02"
   },
   "contributionsByYear": [
     {
@@ -118,10 +118,10 @@ window.__STATS__ = {
     },
     {
       "year": 2026,
-      "commits": 45,
-      "contributions": 50,
+      "commits": 51,
+      "contributions": 56,
       "private": 0,
-      "gitlab": 340
+      "gitlab": 381
     }
   ],
   "sources": [
@@ -133,6 +133,6 @@ window.__STATS__ = {
     "publicProjects": 3,
     "privateProjects": 44,
     "stars": 0,
-    "contributions12w": 202
+    "contributions12w": 242
   }
 };
