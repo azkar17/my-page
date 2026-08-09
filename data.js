@@ -1,5 +1,5 @@
 window.__STATS__ = {
-  "generatedAt": "2026-08-08T04:06:27.044Z",
+  "generatedAt": "2026-08-09T04:11:50.128Z",
   "totalContributionsYear": 125,
   "commitContributionsYear": 113,
   "privateContributions": 0,
@@ -64,7 +64,6 @@ window.__STATS__ = {
   "activity": {
     "weeks": [
       0,
-      0,
       10,
       45,
       8,
@@ -74,7 +73,8 @@ window.__STATS__ = {
       14,
       51,
       73,
-      91
+      91,
+      0
     ],
     "total": 373,
     "last90": 373,
