@@ -1,7 +1,7 @@
 window.__STATS__ = {
-  "generatedAt": "2026-08-30T08:42:57.183Z",
-  "totalContributionsYear": 105,
-  "commitContributionsYear": 94,
+  "generatedAt": "2026-08-31T09:05:43.717Z",
+  "totalContributionsYear": 104,
+  "commitContributionsYear": 93,
   "privateContributions": 0,
   "publicRepos": 8,
   "privateRepos": 19,
@@ -10,7 +10,7 @@ window.__STATS__ = {
   "languages": [
     {
       "name": "JavaScript",
-      "bytes": 9892478
+      "bytes": 9892477
     },
     {
       "name": "CSS",
@@ -74,11 +74,11 @@ window.__STATS__ = {
       18,
       24,
       30,
-      0
+      2
     ],
-    "total": 390,
-    "last90": 405,
-    "lastDate": "2026-08-29"
+    "total": 392,
+    "last90": 407,
+    "lastDate": "2026-08-31"
   },
   "contributionsByYear": [
     {
@@ -121,18 +121,11 @@ window.__STATS__ = {
       "commits": 54,
       "contributions": 60,
       "private": 0,
-      "gitlab": 539
+      "gitlab": 541
     }
   ],
   "sources": [
-    "github",
-    "gitlab"
+    "github"
   ],
-  "gitlab": {
-    "projects": 48,
-    "publicProjects": 3,
-    "privateProjects": 45,
-    "stars": 0,
-    "contributions12w": 361
-  }
+  "gitlab": null
 };
