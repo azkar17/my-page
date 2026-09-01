@@ -641,13 +641,14 @@ const CONFIG = {
   //   stack  : optional list of technologies used (rendered as tags in the modal).
   //   long   : optional longer description shown in the modal (falls back to `desc`).
   projects : [
-    // url intentionally omitted — the public site isn't linked. Was: https://noderightdental.com
     { name:"Noderight Dental", img:"noderight-dental",
+      url:"https://noderightdental.com",
       desc:"Multi-tenant dental practice-management platform — appointments, patient records, billing, inventory, and staff management.",
       long:"A multi-tenant SaaS platform for dental clinics: online appointments, patient records, billing and invoicing, inventory, HR and staff management, and reporting. Built solo end-to-end — schema design, backend, frontend templates, and production deployment. Serves 50+ clinics.",
       stack:["Laravel","MySQL","Livewire","Alpine.js","Tailwind","Redis","Typesense","Stripe","AWS S3","stancl/tenancy","Sanctum","DigitalOcean"],
       gallery:["noderight-dental","noderight-dental-dashboard"] },
     { name:"MAPA Circular Management System", img:"mapa",
+      url:"https://members.mapa.net.my",
       desc:"Digital circular-management platform for the Malayan Agricultural Producers Association — publish, distribute, and track official circulars across members.",
       long:"Digital platform for the Malayan Agricultural Producers Association to publish, distribute, and track official circulars across member organisations — replacing a manual paper-based workflow.",
       stack:["Laravel","MySQL","Blade","Tailwind","Vite","MailerSend"],
@@ -664,6 +665,7 @@ const CONFIG = {
       stack:["Laravel","MySQL","Bootstrap","jQuery","DomPDF","Excel","Sass"],
       gallery:[] },
     { name:"Speggit Order",     img:"speggit-order",
+      url:"https://order.speggit.my",
       desc:"Online ordering with a Raspberry Pi print server — a second Laravel service on the Pi accepts order webhooks and routes each item to the printer its menu is mapped to: kitchen, bar, or any other station.",
       long:"Online ordering web app backed by a second Laravel service running on a Raspberry Pi inside the shop. An order placed on the public site (WAN) fires a webhook to the Pi on the local network, which routes each line to the printer its menu item is mapped to — food to the kitchen, drinks to the bar, and so on. Every station prints only what it has to make, tickets appear the moment an order lands, and the printers never have to be exposed to the internet.",
       stack:["Laravel","MySQL","Raspberry Pi","Webhooks","Print routing","LAN"],
