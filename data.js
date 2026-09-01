@@ -1,5 +1,5 @@
 window.__STATS__ = {
-  "generatedAt": "2026-08-31T09:05:43.717Z",
+  "generatedAt": "2026-09-01T08:08:15.412Z",
   "totalContributionsYear": 104,
   "commitContributionsYear": 93,
   "privateContributions": 0,
@@ -10,7 +10,7 @@ window.__STATS__ = {
   "languages": [
     {
       "name": "JavaScript",
-      "bytes": 9892477
+      "bytes": 9892346
     },
     {
       "name": "CSS",
@@ -125,7 +125,14 @@ window.__STATS__ = {
     }
   ],
   "sources": [
-    "github"
+    "github",
+    "gitlab"
   ],
-  "gitlab": null
+  "gitlab": {
+    "projects": 48,
+    "publicProjects": 3,
+    "privateProjects": 45,
+    "stars": 0,
+    "contributions12w": 363
+  }
 };
