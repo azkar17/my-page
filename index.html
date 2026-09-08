@@ -337,8 +337,16 @@
   .lb-btn svg{width:16px;height:16px}
   .lb-pct{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:46px;text-align:center;
     background:rgba(14,17,22,.78);border:1px solid var(--line);border-radius:9px;padding:8px 6px}
+  .lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:2;width:44px;height:60px;
+    border-radius:11px;background:rgba(14,17,22,.78);border:1px solid var(--line);color:var(--text);
+    cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.18s}
+  .lb-nav:hover{border-color:var(--accent);color:var(--accent)}
+  .lb-nav svg{width:22px;height:22px}
+  .lb-nav.prev{left:14px} .lb-nav.next{right:14px}
+  @media (max-width:560px){ .lb-nav{width:38px;height:52px} .lb-nav.prev{left:6px} .lb-nav.next{right:6px} }
   .lb-hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;pointer-events:none;
     font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .lb-hint b{color:var(--muted);font-weight:400}
   @media (max-width:560px){ .lb-hint{display:none} }
   @media print{.lightbox{display:none!important}}
   @media print{.modal{display:none!important}}
@@ -585,8 +593,14 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
     </button>
   </div>
+  <button class="lb-nav prev" id="lb-prev" aria-label="Previous screenshot" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <button class="lb-nav next" id="lb-next" aria-label="Next screenshot" style="display:none">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
   <div class="lb-stage" id="lb-stage"><img id="lb-img" alt=""></div>
-  <div class="lb-hint">click image to zoom &middot; scroll to zoom &middot; drag to pan &middot; esc to close</div>
+  <div class="lb-hint"><b id="lb-count"></b>click image to zoom &middot; scroll to zoom &middot; drag to pan &middot; &larr;/&rarr; to browse &middot; esc to close</div>
 </div>
 
 <!-- Stats data. data.js sets window.__STATS__ and loads even from file:// (opened directly).
@@ -1084,6 +1098,7 @@ function openProjectModal(p){
     img.src = `images/${slug}.png`;
   }
 
+  LB.shots = shots.slice();   // the lightbox browses this same list
   if(shots.length){
     showShot(shots[0]);
     if(shots.length > 1){
@@ -1133,14 +1148,32 @@ function closeProjectModal(){
 /* ---------- lightbox: full-size screenshot with zoom + pan ----------
    Scale and offset live in JS and are written to a single transform, so zooming
    stays smooth and never reflows the page behind it. */
-const LB = { scale:1, tx:0, ty:0, min:1, max:6 };
+const LB = { scale:1, tx:0, ty:0, min:1, max:6, shots:[], i:0, alt:'' };
+
+// Show shot i of the open project's gallery, back at fit-to-screen. The modal
+// underneath follows along, so closing leaves you on the shot you browsed to.
+function lbShow(i){
+  if(i < 0 || i >= LB.shots.length) return;
+  LB.i = i;
+  const slug = LB.shots[i];
+  $('lb-img').src = `images/${slug}.png`;
+  $('lb-img').alt = LB.alt;
+  LB.scale = 1; LB.tx = 0; LB.ty = 0;
+  lbApply();
+  $('lb-prev').style.display = i > 0 ? '' : 'none';
+  $('lb-next').style.display = i < LB.shots.length - 1 ? '' : 'none';
+  $('lb-count').textContent = LB.shots.length > 1 ? `${i+1} / ${LB.shots.length} \u00b7 ` : '';
+  const thumb = document.querySelector(`#m-thumbs img[data-s="${slug}"]`);
+  if(thumb && !thumb.classList.contains('active')) thumb.click();
+}
 
 function lbOpen(src, alt){
   const lb = $('lightbox');
-  $('lb-img').src = src;
-  $('lb-img').alt = alt || '';
-  LB.scale = 1; LB.tx = 0; LB.ty = 0;
-  lbApply();
+  LB.alt = alt || '';
+  const slug = (src.split('/').pop() || '').replace(/\.png$/, '');
+  const i = LB.shots.indexOf(slug);
+  lbShow(i > -1 ? i : 0);
+  if(i === -1){ $('lb-img').src = src; }   // gallery list missing: show what was clicked
   lb.classList.add('open');
   document.body.classList.add('modal-open');
   $('lb-close').focus();
@@ -1197,6 +1230,8 @@ function lbZoomTo(next, cx, cy){
   });
 
   $('lb-close').addEventListener('click', lbClose);
+  $('lb-prev') .addEventListener('click', ()=> lbShow(LB.i - 1));
+  $('lb-next') .addEventListener('click', ()=> lbShow(LB.i + 1));
   $('lb-in')   .addEventListener('click', ()=> lbZoomTo(LB.scale * 1.4));
   $('lb-out')  .addEventListener('click', ()=> lbZoomTo(LB.scale / 1.4));
   $('lb-reset').addEventListener('click', ()=> lbZoomTo(1));
@@ -1240,6 +1275,8 @@ function lbZoomTo(next, cx, cy){
     else if(e.key === '+' || e.key === '=') lbZoomTo(LB.scale * 1.4);
     else if(e.key === '-') lbZoomTo(LB.scale / 1.4);
     else if(e.key === '0') lbZoomTo(1);
+    else if(e.key === 'ArrowLeft')  lbShow(LB.i - 1);
+    else if(e.key === 'ArrowRight') lbShow(LB.i + 1);
   });
   addEventListener('resize', ()=>{ if(lb.classList.contains('open')) lbApply(); });
 })();
