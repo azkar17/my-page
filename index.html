@@ -318,6 +318,29 @@
   .m-stack .tag{font-family:var(--mono);font-size:12px;color:var(--text);background:var(--surface-2);
     border:1px solid var(--line);border-radius:999px;padding:5px 12px}
   body.modal-open{overflow:hidden}
+
+  /* ============================================================ LIGHTBOX
+     Full-screen view of the shot open in the project modal, with zoom + pan. */
+  .m-gallery img{cursor:zoom-in}
+  .lightbox{position:fixed;inset:0;z-index:60;display:none;background:rgba(4,6,9,.94);backdrop-filter:blur(2px)}
+  .lightbox.open{display:block}
+  .lb-stage{position:absolute;inset:0;overflow:hidden;touch-action:none}
+  .lb-stage img{position:absolute;top:50%;left:50%;max-width:94vw;max-height:92vh;
+    transform-origin:center center;will-change:transform;-webkit-user-drag:none;user-select:none;
+    cursor:zoom-in;background:#0b0e12;border-radius:6px}
+  .lb-stage.zoomed img{cursor:grab}
+  .lb-stage.dragging img{cursor:grabbing}
+  .lb-bar{position:absolute;top:14px;right:14px;z-index:2;display:flex;align-items:center;gap:8px}
+  .lb-btn{width:34px;height:34px;border-radius:9px;background:rgba(14,17,22,.78);border:1px solid var(--line);
+    color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:.18s}
+  .lb-btn:hover{border-color:var(--accent);color:var(--accent)}
+  .lb-btn svg{width:16px;height:16px}
+  .lb-pct{font-family:var(--mono);font-size:12px;color:var(--muted);min-width:46px;text-align:center;
+    background:rgba(14,17,22,.78);border:1px solid var(--line);border-radius:9px;padding:8px 6px}
+  .lb-hint{position:absolute;left:0;right:0;bottom:16px;text-align:center;pointer-events:none;
+    font-family:var(--mono);font-size:11px;color:var(--faint)}
+  @media (max-width:560px){ .lb-hint{display:none} }
+  @media print{.lightbox{display:none!important}}
   @media print{.modal{display:none!important}}
 
   /* footer */
@@ -543,6 +566,27 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- ===================== LIGHTBOX ===================== -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Full-size screenshot">
+  <div class="lb-bar">
+    <button class="lb-btn" id="lb-out" aria-label="Zoom out">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M8 11h6M20 20l-3.5-3.5"/></svg>
+    </button>
+    <span class="lb-pct" id="lb-pct">100%</span>
+    <button class="lb-btn" id="lb-in" aria-label="Zoom in">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M8 11h6M11 8v6M20 20l-3.5-3.5"/></svg>
+    </button>
+    <button class="lb-btn" id="lb-reset" aria-label="Reset zoom">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+    </button>
+    <button class="lb-btn" id="lb-close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="lb-stage" id="lb-stage"><img id="lb-img" alt=""></div>
+  <div class="lb-hint">click image to zoom &middot; scroll to zoom &middot; drag to pan &middot; esc to close</div>
 </div>
 
 <!-- Stats data. data.js sets window.__STATS__ and loads even from file:// (opened directly).
@@ -1086,13 +1130,131 @@ function closeProjectModal(){
   document.body.classList.remove('modal-open');
 }
 
+/* ---------- lightbox: full-size screenshot with zoom + pan ----------
+   Scale and offset live in JS and are written to a single transform, so zooming
+   stays smooth and never reflows the page behind it. */
+const LB = { scale:1, tx:0, ty:0, min:1, max:6 };
+
+function lbOpen(src, alt){
+  const lb = $('lightbox');
+  $('lb-img').src = src;
+  $('lb-img').alt = alt || '';
+  LB.scale = 1; LB.tx = 0; LB.ty = 0;
+  lbApply();
+  lb.classList.add('open');
+  document.body.classList.add('modal-open');
+  $('lb-close').focus();
+}
+
+function lbClose(){
+  $('lightbox').classList.remove('open');
+  // the project modal is still open underneath, so only it may release the scroll lock
+  if(!$('proj-modal').classList.contains('open')) document.body.classList.remove('modal-open');
+}
+
+// Keep the image from being dragged off-stage: once it is larger than the
+// viewport, the pan offset is capped at the overflow on each axis.
+function lbClamp(){
+  const img = $('lb-img'), stage = $('lb-stage');
+  if(!img.naturalWidth) return;
+  const r = stage.getBoundingClientRect();
+  const maxX = Math.max(0, (img.offsetWidth  * LB.scale - r.width ) / 2);
+  const maxY = Math.max(0, (img.offsetHeight * LB.scale - r.height) / 2);
+  LB.tx = Math.min(maxX, Math.max(-maxX, LB.tx));
+  LB.ty = Math.min(maxY, Math.max(-maxY, LB.ty));
+}
+
+function lbApply(){
+  lbClamp();
+  $('lb-img').style.transform =
+    `translate(-50%,-50%) translate(${LB.tx}px,${LB.ty}px) scale(${LB.scale})`;
+  $('lb-pct').textContent = Math.round(LB.scale * 100) + '%';
+  $('lb-stage').classList.toggle('zoomed', LB.scale > 1);
+}
+
+// Zoom toward a viewport point so whatever sits under the cursor stays put.
+function lbZoomTo(next, cx, cy){
+  const stage = $('lb-stage'), r = stage.getBoundingClientRect();
+  next = Math.min(LB.max, Math.max(LB.min, next));
+  if(cx == null){ cx = r.left + r.width/2; cy = r.top + r.height/2; }
+  const px = cx - (r.left + r.width/2), py = cy - (r.top + r.height/2);
+  const k  = next / LB.scale;
+  LB.tx = px - (px - LB.tx) * k;
+  LB.ty = py - (py - LB.ty) * k;
+  LB.scale = next;
+  if(LB.scale === 1){ LB.tx = 0; LB.ty = 0; }
+  lbApply();
+}
+
+(function initLightbox(){
+  const lb = $('lightbox'); if(!lb) return;
+  const stage = $('lb-stage'), img = $('lb-img');
+
+  // opened from the modal's main shot (delegated: showShot() rewrites that node)
+  $('m-gallery').addEventListener('click', e=>{
+    const el = e.target.closest('img');
+    if(el) lbOpen(el.getAttribute('src'), el.getAttribute('alt'));
+  });
+
+  $('lb-close').addEventListener('click', lbClose);
+  $('lb-in')   .addEventListener('click', ()=> lbZoomTo(LB.scale * 1.4));
+  $('lb-out')  .addEventListener('click', ()=> lbZoomTo(LB.scale / 1.4));
+  $('lb-reset').addEventListener('click', ()=> lbZoomTo(1));
+
+  stage.addEventListener('wheel', e=>{
+    e.preventDefault();
+    lbZoomTo(LB.scale * Math.exp(-e.deltaY * 0.0016), e.clientX, e.clientY);
+  }, {passive:false});
+
+  // drag to pan while zoomed; a press that never moved counts as a click
+  let down = null, moved = false;
+  stage.addEventListener('pointerdown', e=>{
+    if(e.button !== 0) return;
+    down = {x:e.clientX, y:e.clientY, tx:LB.tx, ty:LB.ty};
+    moved = false;
+    if(LB.scale > 1){ stage.setPointerCapture(e.pointerId); stage.classList.add('dragging'); }
+  });
+  stage.addEventListener('pointermove', e=>{
+    if(!down) return;
+    const dx = e.clientX - down.x, dy = e.clientY - down.y;
+    if(Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+    if(LB.scale > 1){ LB.tx = down.tx + dx; LB.ty = down.ty + dy; lbApply(); }
+  });
+  stage.addEventListener('pointerup', e=>{
+    const wasDrag = moved;
+    down = null; stage.classList.remove('dragging');
+    if(wasDrag) return;
+    // pointer capture retargets the event to the stage while zoomed, so hit-test by geometry
+    const r = img.getBoundingClientRect();
+    const onImg = e.clientX >= r.left && e.clientX <= r.right &&
+                  e.clientY >= r.top  && e.clientY <= r.bottom;
+    if(onImg) lbZoomTo(LB.scale > 1 ? 1 : 2, e.clientX, e.clientY); // image: toggle zoom
+    else lbClose();                                                 // backdrop: dismiss
+  });
+  stage.addEventListener('pointercancel', ()=>{ down = null; stage.classList.remove('dragging'); });
+
+  addEventListener('keydown', e=>{
+    if(!lb.classList.contains('open')) return;
+    // stop here so the project modal's own Escape handler doesn't close it too
+    if(e.key === 'Escape'){ e.stopImmediatePropagation(); lbClose(); }
+    else if(e.key === '+' || e.key === '=') lbZoomTo(LB.scale * 1.4);
+    else if(e.key === '-') lbZoomTo(LB.scale / 1.4);
+    else if(e.key === '0') lbZoomTo(1);
+  });
+  addEventListener('resize', ()=>{ if(lb.classList.contains('open')) lbApply(); });
+})();
+
 /* wire modal dismissers once */
 (function initModal(){
   const modal = $('proj-modal');
   if(!modal) return;
   $('m-close').addEventListener('click', closeProjectModal);
   modal.addEventListener('click', e=>{ if(e.target === modal) closeProjectModal(); }); // backdrop
-  addEventListener('keydown', e=>{ if(e.key==='Escape' && modal.classList.contains('open')) closeProjectModal(); });
+  addEventListener('keydown', e=>{
+    if(e.key!=='Escape' || !modal.classList.contains('open')) return;
+    if($('lightbox').classList.contains('open')) return;   // lightbox handles its own Escape
+    closeProjectModal();
+  });
 })();
 
 /* ---------- role typewriter ----------
