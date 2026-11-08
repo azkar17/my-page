@@ -1,5 +1,5 @@
 window.__STATS__ = {
-  "generatedAt": "2026-11-07T09:26:33.504Z",
+  "generatedAt": "2026-11-08T09:44:08.083Z",
   "totalContributionsYear": 83,
   "commitContributionsYear": 75,
   "privateContributions": 0,
@@ -63,7 +63,6 @@ window.__STATS__ = {
   ],
   "activity": {
     "weeks": [
-      19,
       30,
       79,
       80,
@@ -74,10 +73,11 @@ window.__STATS__ = {
       36,
       25,
       6,
-      17
+      17,
+      0
     ],
-    "total": 606,
-    "last90": 606,
+    "total": 587,
+    "last90": 587,
     "lastDate": "2026-11-05"
   },
   "contributionsByYear": [
@@ -133,6 +133,6 @@ window.__STATS__ = {
     "publicProjects": 3,
     "privateProjects": 47,
     "stars": 0,
-    "contributions12w": 590
+    "contributions12w": 571
   }
 };
