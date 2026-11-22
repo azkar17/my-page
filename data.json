@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-21T10:28:12.506Z",
+  "generatedAt": "2026-11-22T10:31:16.910Z",
   "totalContributionsYear": 77,
   "commitContributionsYear": 70,
   "privateContributions": 0,
@@ -63,8 +63,7 @@
   ],
   "activity": {
     "weeks": [
-      78,
-      80,
+      76,
       72,
       118,
       65,
@@ -74,10 +73,11 @@
       6,
       17,
       19,
-      14
+      14,
+      0
     ],
-    "total": 589,
-    "last90": 589,
+    "total": 507,
+    "last90": 511,
     "lastDate": "2026-11-19"
   },
   "contributionsByYear": [
@@ -133,6 +133,6 @@
     "publicProjects": 3,
     "privateProjects": 47,
     "stars": 0,
-    "contributions12w": 573
+    "contributions12w": 495
   }
 }
